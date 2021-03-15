@@ -1,0 +1,106 @@
+<html>
+<canvas id="gameCanvas" width="800" height="600" ></canvas>
+<script>
+var canvas;
+var canvasContext;
+var ballx=100;
+var bally=100;
+var ballSx=10;
+var ballSy=4;
+var paddle1=220;
+var paddle2=220;
+var player1=0;
+var player2=0;
+function calmopos(evt){
+	var rect=canvas.getBoundingClientRect();
+	var root=document.documentElement;
+	var mousex=evt.clientX - rect.left - root.scrollLeft;
+	var mousey=evt.clientY - rect.top - root.scrollTop;
+	return {
+		x:mousex,
+		y:mousey
+	};
+}
+
+window.onload = function() {
+	canvas = document.getElementById('gameCanvas');
+	canvasContext = canvas.getContext('2d');
+	setInterval(both,35);	
+	canvas.addEventListener('mousemove',
+		function(evt){
+			var mousePos=calmopos(evt);
+			paddle1=mousePos.y-50;
+			//paddle2=mousePos.y-50; 
+		});
+}
+function reset(){
+	if(player1>=10||player2>=10)
+	{
+		player1=0;
+		player2=0;
+	}
+	ballSx=-ballSx;
+	ballx=canvas.width/2;
+	bally=canvas.height/2;
+}
+	
+
+function move(){
+	if(paddle2+50<bally-35)
+		paddle2+=8;
+	else if(paddle2+50>bally+35)
+		paddle2-=8;
+	ballx=ballx+ballSx;
+	bally=bally+ballSy;
+	if(ballx>canvas.width){
+		if(bally>paddle2 && bally<(paddle2+100)){
+			ballSx=-ballSx;
+			ballSy=(bally-(paddle2+50))*0.25
+			
+		}
+		else{
+			player1++;
+			reset();	
+		}
+	}
+	if(ballx<0){
+		if(bally>paddle1 && bally<(paddle1+100)){
+			ballSx=-ballSx;
+			ballSy=(bally-(paddle1+50))*0.25
+		}
+		else{
+			player2++;
+			reset();	
+		}
+	}
+	if(bally>canvas.height)
+		ballSy=-ballSy;
+	if(bally<0)
+		ballSy=-ballSy;
+}
+function draw() {
+	canvasContext.fillStyle = 'black';
+	canvasContext.fillRect(0,0,canvas.width,canvas.height);
+	canvasContext.fillStyle='white';
+	canvasContext.fillRect(0,paddle1,10,100);
+	canvasContext.fillStyle='white';
+	canvasContext.fillRect(790,paddle2,10,100);
+	for(var i=0;i<canvas.height;i+=40){
+	canvasContext.fillRect(canvas.width/2-1,i,2,20);
+	}
+	canvasContext.fillStyle = 'white';
+	canvasContext.beginPath();
+	canvasContext.arc(ballx,bally,7,0,Math.PI*2,true);
+	canvasContext.fill();
+	canvasContext.fillText(player1,100,100);
+	canvasContext.fillText(player2,canvas.width-100,100);
+	
+}
+function both(){
+	draw();
+	move();
+}
+
+</script>
+
+</html>
